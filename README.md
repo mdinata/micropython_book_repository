@@ -17,5 +17,5 @@ Repository ini adalah tempat untuk mendownload script dan library micropython ya
   - Disarankan untuk menulis ulang script dalam buku namun jika "kepepet", Download semua script program.
    
 ### Follow and Subscribe
-- [Andidinata.com](andidinata.com) 
-- [Instagram MDINATA](instagram.com/mdinata) 
+- [Andidinata.com](http://www.andidinata.com) 
+- [Instagram MDINATA](http://www.instagram.com/mdinata) 
