@@ -2,6 +2,7 @@
 
 Terima kasih telah membaca buku kedua saya yang berjudul FUN CODING dengan MICROPYTHON - Python untuk Microcontroller ESP8266.
 Repository ini adalah tempat untuk mendownload script dan library micropython yang ditulis pada buku.
+![Cover Depan](/Cover.jpg)
 
 ### Driver Wemos D1 Mini dan NodeMCU
   - Tersedia mulai dari Windows Xp, 7, 10
