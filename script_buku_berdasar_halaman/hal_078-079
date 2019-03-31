@@ -1,0 +1,26 @@
+>>> import time
+>>> def timer(n):
+...     t0=time.time()
+...     time.sleep(n)
+...     t1=time.time()
+...     diff=time.ticks_diff(t1,t0)
+...     print('waktu mula-mula (t0)= ',t0)
+...     print('waktu saat ini (t1)= ',t1)
+...     print(t1,'-',t0,'=',diff)
+
+>>> timer(5)
+
+>>> import time
+>>> def count(n):
+...     t0=time.time()
+...     while True:	
+...         time.sleep(1)
+...         t1=time.time()
+...         if t1 != t0:
+...     	    diff=time.ticks_diff(t1,t0)
+...     	    print(diff)
+...     	    if diff == n:
+...     	       print('waktu ',diff,' detik telah habis')
+...     	       break
+
+>>> count(10)
