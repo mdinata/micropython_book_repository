@@ -1,0 +1,49 @@
+from machine import Pin, SPI
+from adxl345_upy import ADXL345_upy
+import pcd8544
+import time
+
+spi = SPI(1)
+spi.init(baudrate=8000000, polarity=0, phase=0)
+cs = Pin(2)
+dc = Pin(15)
+rst = Pin(0)
+
+bl = Pin(12, Pin.OUT, value=1)
+lcd = pcd8544.PCD8544(spi, cs, dc, rst)
+
+import framebuf
+buffer = bytearray((lcd.height // 8) * lcd.width)
+framebuf = framebuf.FrameBuffer1(buffer, lcd.width, lcd.height)
+
+sensor = ADXL345_upy(sensor_id=2)
+
+def blink():
+	bl.value(0)
+	time.sleep(0.05)
+	bl.value(1)
+	time.sleep(0.05)
+
+while True:
+	framebuf.fill(0)
+	lcd.data(buffer)
+	axes=sensor.sample(True)
+	pos_x=int(axes['x']*38)
+
+	angle = pos_x*2.31
+	framebuf.text("Angle",24,0,1)
+	if angle == 0:
+		x = 40
+	elif angle > 0.01:
+		x = 34
+		blink()
+	elif angle < 0.01:
+		x = 28
+		blink()
+
+	framebuf.text("{:0.0f}".format(angle),x,10,1)
+	framebuf.rect(0,22,84,8,1)
+	framebuf.fill_rect(38+pos_x,22,8,8,1)
+
+	lcd.data(buffer)
+	time.sleep(0.05)

@@ -1,0 +1,27 @@
+import max7219
+from machine import Pin, SPI
+
+spi=SPI(1, baudrate=10000000, polarity=0, phase=0)
+device=max7219.Matrix8x8(spi, Pin(2), 1)
+
+device.fill(0)
+device.show()
+device.brightness(15)
+
+matrix=[
+    [0,0,0,0,0,0,0,0],
+    [0,1,1,0,0,1,1,0],
+    [0,1,1,0,0,1,1,0],
+    [0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,1],
+    [0,1,0,0,0,0,1,0],
+    [0,0,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0]]
+
+def draw(matrix):
+    device.fill(0)
+    device.show()
+    for y, row in enumerate(matrix):
+        for x in enumerate(row):
+            device.pixel(x[0],y,x[1])
+            device.show()

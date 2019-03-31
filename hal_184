@@ -1,0 +1,17 @@
+from machine import Pin, PWM
+
+pin_speed_motor_a=5
+pin_direction_motor_a=0
+pin_speed_motor_b=4
+pin_direction_motor_b=2
+
+speed_motor_a=PWM(Pin(pin_speed_motor_a), Pin.OUT)
+speed_motor_a.freq(500)
+direction_motor_a=Pin(pin_direction_motor_a, Pin.OUT)
+
+speed_motor_b=PWM(Pin(pin_speed_motor_b), Pin.OUT)
+speed_motor_b.freq(500)
+direction_motor_b=Pin(pin_direction_motor_b, Pin.OUT)
+
+#setelah ini masuk ke paste mode dalam REPL (tekan Ctrl-E) dan copy-paste semua baris diatas
+#dan ikuti penjelasan dibuku

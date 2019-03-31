@@ -1,0 +1,112 @@
+#script ini juga dapat didownload pada repository
+#https://github.com/mdinata/micropython_game/tree/master/led_matrix
+
+import max7219
+from machine import Pin, SPI,freq, reset
+
+import time
+import urandom
+import number
+
+freq(160000000)
+
+spi=SPI(1, baudrate=10000000, polarity=0, phase=0)
+device=max7219.Matrix8x8(spi, Pin(2), 1)
+
+device.fill(0)
+device.brightness(10)
+utime.sleep(0.1)
+device.show()
+
+s1 = Pin(5, Pin.IN, Pin.PULL_UP) #left
+s2 = Pin(0, Pin.IN, Pin.PULL_UP) #up
+s3 = Pin(4, Pin.IN, Pin.PULL_UP) #down
+s4 = Pin(12, Pin.IN, Pin.PULL_UP) #right
+
+snake=[(2,2)]
+global snake_dir
+snake_dir=(0,0)
+
+global flag
+flag=0
+
+food=[]
+tail_list=[]
+
+def game_over():
+    device.fill(0)
+    device.show()
+    utime.sleep(0.5)
+    number.draw(len(snake))
+    time.sleep(2)
+    reset()
+
+while True:
+    if s1.value() ==0: #left
+        snake_dir=(0,1)
+        time.sleep(0.05)
+        flag=1
+    elif s2.value() ==0: #up
+        snake_dir=(-1,0)
+        time.sleep(0.05)
+        flag=1
+    elif s3.value()==0: #down
+        snake_dir=(1,0)
+        time.sleep(0.05)
+        flag=1
+    elif s4.value() ==0: #right
+        snake_dir=(0,-1)
+        time.sleep(0.05)
+        flag=1
+
+    r=urandom.getrandbits(3)
+    if r ==0:
+        x,y = urandom.getrandbits(3),urandom.getrandbits(3)
+        food.append((x,y))
+
+    (hx,hy)=snake[0]
+    if len(food)>0:
+        for x,y in food:
+            device.pixel(x,y,1)
+            device.show()
+            if hx==x and hy==y:
+                snake.append((x,y))
+                food.remove((x,y))
+                for x,y in food:
+                    device.pixel(x,y,0)
+                    device.show()
+    
+    x=hx+snake_dir[0]
+    y=hy+snake_dir[1]
+
+    if x > 7:
+            x = 0
+    if x < 0:
+            x = 7
+    if y > 7:
+            y = 0
+    if y < 0:
+            y = 7
+
+    snake.insert(0,(x,y))
+
+    for x,y in snake:
+        device.pixel(x,y,1)
+        device.show()
+
+    time.sleep(0.3)
+    length=len(snake)
+    tail=snake[length-1]
+
+    tail_list.insert(0,tail)
+    for x,y in tail_list:
+        device.pixel(x,y,0)
+        device.show()
+
+    tail_list=[]
+
+    flag=0
+    snake.pop()
+
+    if snake.count(snake[0]) > 1:
+        game_over()

@@ -1,0 +1,12 @@
+>>> import utime
+>>> from adxl345_upy import ADXL345_upy
+
+>>> sensor=ADXL345_upy(sensor_id=2)
+
+>>> while True:
+...    axes=sensor.sample(False)
+...    accx=axes['x']
+...    accy=axes['y']
+...    accz=axes['z']
+...    print('X:{} Y:{} Z:{}'.format(accx,accy,accz))
+...    time.sleep(0.2)

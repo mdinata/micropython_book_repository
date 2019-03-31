@@ -1,0 +1,109 @@
+from machine import Pin, PWM
+from time import sleep
+import socket 
+import websocket_helper
+
+pin_speed_motor_a=5
+pin_direction_motor_a=0
+pin_speed_motor_b=4
+pin_direction_motor_b=2
+
+speed_motor_a=PWM(Pin(pin_speed_motor_a), Pin.OUT)
+speed_motor_a.freq(500)
+direction_motor_a=Pin(pin_direction_motor_a, Pin.OUT)
+
+speed_motor_b=PWM(Pin(pin_speed_motor_b), Pin.OUT)
+speed_motor_b.freq(500)
+direction_motor_b=Pin(pin_direction_motor_b, Pin.OUT)
+
+def gerak(pin_value_motor_a, pin_value_motor_b,speed,koreksi=0):
+	direction_motor_a.value(pin_value_motor_a)
+	direction_motor_b.value(pin_value_motor_b)
+	speed_motor_a.duty(speed+koreksi)
+	speed_motor_b.duty(speed)
+
+def belok(pin_value_motor_a, pin_value_motor_b,speed, koreksi=0, slow_motor_a=0, slow_motor_b=0):
+	direction_motor_a.value(pin_value_motor_a)
+	direction_motor_b.value(pin_value_motor_b)
+	speed_motor_a.duty(speed+koreksi+slow_motor_a)
+	speed_motor_b.duty(speed+slow_motor_b)
+
+def maju():
+	gerak(1,0,500,0)
+
+def mundur(t):
+	gerak(0,1,500,0)
+        sleep(t)
+
+def belok_kanan(t):
+	belok(1,0,500,0,0,-500)
+	sleep(t)
+	belok(1,0,500,0,-500,-500)
+
+def belok_kiri(t):
+	belok(1,0,500,0,-500,0)
+	sleep(t)
+	belok(1,0,500,0,-500,-500)	
+
+def stop():
+	gerak(1,0,0,0)
+
+def turnback(t):
+	belok(1,1,500,0,-250,-250)
+	sleep(t)
+	
+html = """<!DOCTYPE html>
+<html>
+<head> <title>Micropython Webserver</title> </head>
+<meta content='width=device-width; initial-scale=2.0; maximum-scale=2.0; minimum-scale=1.0; user-scalable=no;' name='viewport'/>
+<form>
+<center>
+<button style="font-size:14px;background-color:red; height:30px;width:90px" name="BUTTON" value="fwd" type="submit">FORWARD</button></center></p>
+<center>
+<button style="font-size:14px;background-color:red; height:30px;width:90px" name="BUTTON" value="left" type="submit">LEFT</button>
+<button style="font-size:14px;background-color:yellow; height:30px;width:90px" name="BUTTON" value="stop" type="submit">STOP</button>
+<button style="font-size:14px;background-color:yellow; height:30px;width:90px"name="BUTTON" value="right" type="submit">RIGHT</button></center></p>
+<center>
+<button style="font-size:14px;background-color:lightgreen; height:30px;width:90px"name="BUTTON" value="reverse" type="submit">REVERSE</button></p>
+<button style="font-size:14px;background-color:lightgreen; height:30px;width:90px"name="BUTTON" value="turnback" type="submit">TURNBACK</button></center></p>
+</form>
+</html>
+"""
+
+def main():
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.bind(('', 80))
+	s.listen(5)
+		
+	while True:
+		conn, addr = s.accept()
+		request = conn.recv(1024)
+		request = str(request)
+
+		move_fwd = request.find('/?BUTTON=fwd')
+		move_rev = request.find('/?BUTTON=reverse')
+		move_left = request.find('/?BUTTON=left')
+		move_right = request.find('/?BUTTON=right')
+		move_stop = request.find('/?BUTTON=stop')
+		move_turnback = request.find('/?BUTTON=turnback')
+		
+		if move_fwd == 6:
+			maju()
+		elif move_rev == 6:
+			mundur(1)
+		elif move_left == 6:
+			belok_kiri(0.3)
+		elif move_right == 6:
+			belok_kanan(0.3)
+		elif move_stop == 6:
+			stop()
+		elif move_turnback == 6:
+			turnback(0.8)
+		
+		response = html
+		
+		conn.send(response)
+		conn.close()
+
+if __name__== “__main__”:
+	main()

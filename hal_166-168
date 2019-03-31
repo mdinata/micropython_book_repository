@@ -1,0 +1,39 @@
+from machine import Pin, Timer
+import dht
+from umqtt.simple import MQTTClient
+import time
+
+d=dht.DHT11(Pin(0))
+refresh_period=3 #minutes
+
+def upload_data(t,rh):
+	ClientName="ESP8266 T&RH Logger"
+	ThingSpeakURL="mqtt.thingspeak.com"
+
+	c = MQTTClient(ClientName, ThingSpeakURL, 1883)
+	c.connect()
+
+	ThingSpeakChannelID="YourChannelID"
+	ThingSpeakChannelWriteAPI="YourWriteAPI"
+
+	credentials = "channels/{:s}/publish/{:s}".format(ThingSpeakChannelID, ThingSpeakChannelWriteAPI)
+	payload = "field1={:.1f}&field2={:.1f}\n".format(t, rh)
+	
+	c.publish(credentials,payload)
+	c.disconnect()
+	
+def get_data():
+	d.measure()
+	time.sleep(2)
+	temp=d.temperature()
+	rh=d.humidity()
+
+	upload_data(temp,rh)
+	print('Temp: {} C, Hum: {} %'.format(temp,rh))
+
+tim=Timer(1)
+tim.deinit()
+tim.init(period=(refresh_period*60000), mode=Timer.PERIODIC,
+         callback=lambda t1:get_data())
+
+get_data()

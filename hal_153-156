@@ -1,0 +1,100 @@
+import pcd8544
+from machine import Pin, SPI
+import time
+
+spi = SPI(1)
+spi.init(baudrate=8000000, polarity=0, phase=0)
+cs = Pin(2)
+dc = Pin(15)
+rst = Pin(0)
+
+button=Pin(5,Pin.IN, Pin.PULL_UP)
+
+bl = Pin(12, Pin.OUT, value=1)
+lcd = pcd8544.PCD8544(spi, cs, dc, rst)
+
+import framebuf
+buffer = bytearray((lcd.height // 8) * lcd.width)
+framebuf = framebuf.FrameBuffer1(buffer, lcd.width, lcd.height)
+
+framebuf.text("  Little",0,0,1)
+framebuf.text(" GADGET II",0,10,1)
+framebuf.text("micropython",0,20,1)
+framebuf.text("Press Menu",0,40,1)
+lcd.data(buffer)
+
+flag_list=[]
+
+flag=0
+
+def menu(x):
+    if x == 1:
+        framebuf.text(str(x)+".Clock",0,0,1)
+        framebuf.text("Sensor",0,10,1)
+        framebuf.text("Games",0,20,1)
+        framebuf.text("Counter",0,30,1)
+        framebuf.text("Notes",0,40,1)
+    if x == 2:
+        framebuf.text("Clock",0,0,1)
+        framebuf.text(str(x)+".Sensor",0,10,1)
+        framebuf.text("Games",0,20,1)
+        framebuf.text("Counter",0,30,1)
+        framebuf.text("Notes",0,40,1)
+    if x == 3:
+        framebuf.text("Clock",0,0,1)
+        framebuf.text("Sensor",0,10,1)
+        framebuf.text(str(x)+".Games",0,20,1)
+        framebuf.text("Counter",0,30,1)
+        framebuf.text("Notes",0,40,1)
+    if x == 4:
+        framebuf.text("Clock",0,0,1)
+        framebuf.text("Sensor",0,10,1)
+        framebuf.text("Games",0,20,1)
+        framebuf.text(str(x)+".Counter",0,30,1)
+        framebuf.text("Notes",0,40,1)
+    if x == 5:
+        framebuf.text("Clock",0,0,1)
+        framebuf.text("Sensor",0,10,1)
+        framebuf.text("Timer",0,20,1)
+        framebuf.text("Counter",0,30,1)
+        framebuf.text(str(x)+".Notes",0,40,1)
+    if x == 0:
+	framebuf.text("end of menu",0,0,1)
+    lcd.data(buffer)
+
+def exec_item(n):
+    if n == 1:
+ 	import clock
+    if n == 2:
+	import submenu_sensor
+    if n == 3:
+	import submenu_game
+    if n == 4:
+	import submenu_counter
+    if n == 0:
+	import notes
+
+while True:
+    first = button.value()
+    time.sleep(0.01)
+    second = button.value()
+    if first and not second:
+        start=time.time()
+        flag = 1
+        flag_list.insert(0,flag)
+
+        framebuf.fill(0)
+        lcd.data(buffer)
+
+        menu(len(flag_list))
+
+    elif not first and second:
+	flag = 0
+        end=time.time()
+	diff=end – start
+	
+    if diff >=2:
+        exec_item(len(flag_list))
+
+    if len(flag_list) > 4:
+        flag_list=[]

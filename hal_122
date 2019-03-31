@@ -1,0 +1,13 @@
+from machine import Pin, PWM, ADC
+import time
+
+adc=ADC(0)
+led1=PWM(Pin(5), Pin.OUT)	
+led2=PWM(Pin(4), Pin.OUT)	
+led1.freq(500)
+led2.freq(500)
+
+while True:
+	led1.duty(adc.read())
+	led2.duty(1023-adc.read())
+	time.sleep(0.1)

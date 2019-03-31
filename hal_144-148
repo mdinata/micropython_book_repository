@@ -1,0 +1,100 @@
+import time
+import ntptime
+from uLCD import LCD
+from machine import Timer
+
+lcd=LCD()
+lcd.text('WiFi-Clock')
+lcd.move(0,1)
+lcd.text('wait...')
+ntptime.settime()
+lcd.move(0,1)
+lcd.text('CONNECTED')
+lcd.clear()
+
+month_name={'1':'Jan','2':'Feb','3':'Mar','4':'Apr',
+        '5':'May','6':'Jun','7':'Jul','8':'Aug',
+        '9':'Sep','10':'Oct','11':'Nov','12':'Dec'}
+
+message={'1':'good morning','2':'good afternoon',
+         '3':'good evening','4':'good night'}    
+
+tim=Timer(1)
+tim.deinit()
+tim.init(period=3600000, mode=Timer.PERIODIC,
+         callback=lambda t1:get_time())
+
+def get_time():
+    lcd.clear()
+    lcd.text('refreshing')
+    lcd.move(0,1)
+    lcd.text('network time')
+    ntptime.settime()
+
+def main():
+    localtime=utime.localtime()
+
+    day=localtime[2]
+    month=localtime[1]
+    year=localtime[0]
+
+    hour=localtime[3]+int(7) #convert to GMT +7:00
+    if hour >= 24:
+        day = day + 1
+    
+        if hour == 24:
+                hour = 0
+        elif hour == 25:
+                hour = 1
+        elif hour == 26:
+                hour = 2
+        elif hour == 27:
+                hour = 3
+        elif hour == 28:
+                hour = 4
+        elif hour == 29:
+                hour = 5
+        elif hour == 30:
+                hour = 6
+
+    if len(str(hour))== 1:
+        hour='0'+str(hour)
+
+    minute=localtime[4]
+    if len(str(minute))== 1:
+        minute='0'+str(minute)
+
+    second=localtime[5]
+    if len(str(second))== 1:
+        second='0'+str(second)
+    lcd.move(0,0)
+    lcd.text(str(day))
+    lcd.text("-")
+    lcd.text(month_name[str(month)])
+    
+    lcd.move(7,0)
+    lcd.text(str(hour))
+    lcd.text(':')
+    lcd.text(str(minute))
+    lcd.text(':')
+    lcd.text(str(second))
+
+    if 12 > int(hour) >0:
+        lcd.move(0,1)
+        lcd.text(message['1'])
+    elif 18 > int(hour)>=12:
+        lcd.move(0,1)
+        lcd.text(message['2'])
+    elif 21 > int(hour) >18:
+        lcd.move(0,1)
+        lcd.text(message['3'])
+    else:
+        lcd.move(0,1)
+        lcd.text(message['4'])
+
+while True:
+    main()
+    time.sleep(1)
+
+
+    
