@@ -1,0 +1,31 @@
+from machine import Pin
+from dht import DHT11
+import time
+
+sensor=DHT11(Pin(16))
+merah=Pin(4, Pin.OUT)
+hijau=Pin(5, Pin.OUT)
+buzzer=Pin(14, Pin.OUT)
+
+def read_sensor():
+	sensor.measure()
+	temp=sensor.temperature()
+	rh=sensor.humidity()
+	return temp,rh
+
+def beep():
+	buzzer.on()
+	time.sleep(0.1)
+	buzzer.off()
+	time.sleep(0.1)
+	
+while True:
+	if (read_sensor[0]>30) or (read_sensor[1]>80):
+		beep()
+		merah.on()
+	elif (30>read_sensor[0]>27) or (80>read_sensor[1]>60):
+		merah.off()
+	else:
+		merah.off()
+		hijau.on()
+	time.sleep(10)

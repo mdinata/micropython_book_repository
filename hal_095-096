@@ -1,0 +1,20 @@
+from machine import Pin, PWM
+import time
+
+led=PWM(Pin(4), Pin.OUT)
+led.freq(500)
+
+min_duty = 0
+max_duty = 1023
+step=10
+
+while True:
+	for i in range(min_duty,max_duty,step):
+		led.duty(i)
+		time.sleep(0.01)
+		print(i)
+	for i in range(min_duty,max_duty,step):
+		led.duty(max_duty-i)
+		time.sleep(0.01)
+		print(i)
+

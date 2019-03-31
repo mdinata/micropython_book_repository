@@ -1,0 +1,35 @@
+from machine import Pin
+import time
+
+button_1=Pin(5, Pin.IN, Pin.PULL_UP)
+button_2=Pin(16, Pin.IN, Pin.PULL_UP)
+
+def stopwatch():
+	minute=0
+	start=time.ticks_ms()
+	while True:
+		C = button_2.value()
+		time.sleep(0.01)
+		D = button_2.value()
+		if C and not D:
+			break			
+		elif not C and D:
+			pass
+		end=time.ticks_ms()
+		second=time.ticks_diff(end,start)
+		time.sleep_ms(100)
+		if second > 59999:
+			minute += 1
+			start=time.ticks_ms()
+		display=str(minute)+":"+str(second/1000)
+		print(display)		
+
+while True:
+	A = button_1.value()
+	time.sleep(0.01)
+	B = button_1.value()
+	if A and not B:
+		stopwatch()			
+	elif not A and B:
+		pass
+

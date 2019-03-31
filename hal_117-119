@@ -1,0 +1,51 @@
+from machine import Pin
+import time
+
+trig_pin = 15
+echo_pin = 13
+led_pin = 12
+
+echo = Pin(echo_pin, Pin.IN)
+led = Pin(led_pin, Pin.OUT)
+trig = Pin(trig_pin, Pin.OUT)
+trig.off()
+time.sleep_ms(2)
+trig.on()
+time.sleep_ms(10)
+trig.off()
+
+def get_distance(unit="cm"):
+	trig.on()
+	time.sleep_ms(10)
+	trig.off()
+	while echo.value() == 0:
+		pass
+	start = time.ticks_us()
+	
+	while echo.value() == 1:
+		pass
+	stop = time.ticks_us()
+	d = (stop - start) / 58
+	distance = round(d,2)
+	if unit == "mm":
+		factor = 10
+	elif unit == "cm":
+		factor = 1
+	elif unit == "m":
+		factor = 0.01
+	    
+	return distance*factor
+
+def limit(value):
+	x=int(get_distance())
+	if x < float(value):
+		led.on()
+		print('limit is reached')
+	else:
+		led.off()
+	print('distance is {} cm'.format(x))
+	print('limit is {} cm'.format(value))
+
+while True:
+	limit(10)
+	time.sleep(1)

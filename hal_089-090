@@ -1,0 +1,25 @@
+from machine import Pin
+
+merah=Pin(15,Pin.OUT)
+hijau=Pin(13,Pin.OUT)
+biru=Pin(12,Pin.OUT)
+
+color=[merah, hijau, biru]
+color_dict={
+  '000':'off',
+  '001':'biru',
+  '010':'hijau',
+  '100':'merah',
+  '101':'ungu',
+  '110':'kuning',
+  '011':'aqua',
+  '111':'putih'
+  }
+
+while True:
+  x=input("Masukkan kombinasi warna R/G/B: ")
+  if len(x) == 3:
+    color[0].value(int(x[0]))
+    color[1].value(int(x[1]))
+    color[2].value(int(x[2]))
+    print(color_dict[x])

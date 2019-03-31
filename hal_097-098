@@ -1,0 +1,20 @@
+from machine import Pin, PWM
+import time, math
+
+merah=PWM(Pin(15),Pin.OUT)
+hijau=PWM(Pin(13),Pin.OUT)
+biru=PWM(Pin(12),Pin.OUT)
+
+merah.freq(500)
+hijau.freq(500)
+biru.freq(500)
+
+def pulse(warna,t):
+	for i in range(20):
+		warna.duty(int(math.sin(i/10*math.pi)*500+500))
+		time.sleep_ms(t)
+
+while True:
+	pulse(merah,100)
+	pulse(hijau,100)
+	pulse(biru,100)
