@@ -14,7 +14,7 @@ Repository ini adalah tempat untuk mendownload script dan library micropython ya
 
 ### Library dan Script
   - Download semua library untuk mengoperasikan hardware (led matrix, lcd, sensor accelerometer) dan transfer ke dalam ESP8266 (lihat petunjuk pada buku)
-  - Disarankan untuk menulis ulang script dalam buku namun jika "kepepet", Download semua script program.
+  - Disarankan untuk mendownload script yang tercetak pada buku dalam folder script_buku_berdasar_halaman
    
 ### Follow and Subscribe
 - [Andidinata.com](http://www.andidinata.com) 
